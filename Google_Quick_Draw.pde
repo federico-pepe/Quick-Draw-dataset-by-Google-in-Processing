@@ -5,16 +5,16 @@
  * 
  * Quick, Draw! Dataset by Google
  * https://github.com/googlecreativelab/quickdraw-dataset
-*/
+ */
 
-JSONArray values;
-int click = 0;
+BufferedReader reader;
+
+String line;
+JSONObject json;
 
 void setup() {
   size(256, 256);
-  println("--- WAIT WHILE LOADING THE FILE");
-  values = loadJSONArray("full-simplified-anvil.json");
-  println("--- " + values.size() + " DRAWS LOADED! START CLICKING");
+  reader = createReader("full-simplified-anvil.ndjson");
 }
 
 void draw() {
@@ -22,24 +22,30 @@ void draw() {
 
 void mousePressed() {
   background(127);
-  // Checking if you are at the end of the array
-  if (click >= values.size()) {
-    click = 0;
-  }
-  // Working on the JSON Object
-  JSONObject json;
-  json = values.getJSONObject(click);
-  JSONArray drawing = json.getJSONArray("drawing");
+  try {
+    line = reader.readLine();
+    json = parseJSONObject(line);
+    JSONArray drawing = json.getJSONArray("drawing");
 
-  for (int i = 0; i < drawing.size(); i++) {
-    JSONArray var = drawing.getJSONArray(i);
-    for (int j = 0; j < var.size(); j += var.size()) {
-      beginShape();
-      for (int z = 0; z < var.getJSONArray(j).size(); z++) {
-        vertex(var.getJSONArray(j).getInt(z), var.getJSONArray(j+1).getInt(z));
+    for (int i = 0; i < drawing.size(); i++) {
+      JSONArray var = drawing.getJSONArray(i);
+      for (int j = 0; j < var.size(); j += var.size()) {
+        beginShape();
+        for (int z = 0; z < var.getJSONArray(j).size(); z++) {
+          vertex(var.getJSONArray(j).getInt(z), var.getJSONArray(j+1).getInt(z));
+        }
+        endShape(CLOSE);
       }
-      endShape(CLOSE);
     }
+  } 
+  catch (IOException e) {
+    e.printStackTrace();
+    line = null;
   }
-  click++;
+  // As find in BufferedReader's reference
+  // https://processing.org/reference/BufferedReader.html
+  if (line == null) {
+    // Stop reading because of an error or file is empty
+    noLoop();
+  }
 }
