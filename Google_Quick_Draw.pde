@@ -2,7 +2,7 @@
  * Quick, Draw! The Data with Processing
  * by Federico Pepe
  * 23.05.2017
- * 
+ *
  * Quick, Draw! Dataset by Google
  * https://github.com/googlecreativelab/quickdraw-dataset
  */
@@ -37,7 +37,7 @@ void mousePressed() {
         endShape(CLOSE);
       }
     }
-  } 
+  }
   catch (IOException e) {
     e.printStackTrace();
     line = null;
